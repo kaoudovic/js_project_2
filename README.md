@@ -1,1 +1,1 @@
-# js_project_2
+# secondProjectJS

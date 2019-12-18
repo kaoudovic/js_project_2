@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+    <head>
+        <meta charset="utf-8">
+        <title>First Project</title>
+        <style>
+            #sor button{
+                margin-left:10px;
+            }
+        </style>
+        <script src="jquery-3.4.1.min.js"></script>
+    </head>
+    <body style=" background-color: darkred">
+        <h1><i>Learn the English Letters</i></h1><br>
+        <span style="text-align: center">Number of Letters </span>
+        <input type="number" name="letters" id="letters_num">
+        <button type="button" id="button" onclick="show()">Generate</button><br>
+        <span id="error" style="color:red"></span><br>
+        <div id="sor"></div><br>
+        <img src="" alt="" id="imgsrc" width="250px"height="300px">
+        <br><br>
+        <button type="button" id="storedData" onclick="showStoredData()">Show Events</button>
+        <div id="mydiv"></div>
+
+        <script>
+            // make array of src links to prevent the repeatation of lines and using loop
+            var arr=new Array("JSproject/a.jpg","JSproject/b.jpg","JSproject/c.jpg","JSproject/d.jpg","JSproject/e.jpg","JSproject/f.jpg","JSproject/g.jpg","JSproject/h.jpg","JSproject/i.jpg","JSproject/j.jpg","JSproject/k.jpg","JSproject/l.jpg","JSproject/m.jpg",
+            "JSproject/n.jpg","JSproject/o.jpg","JSproject/p.jpg","JSproject/q.jpg","JSproject/r.jpg","JSproject/s.jpg","JSproject/t.jpg","JSproject/u.jpg","JSproject/v.jpg","JSproject/w.jpg","JSproject/x.jpg","JSproject/y.jpg","JSproject/z.jpg");
+            var x=['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+
+            function show(){
+                var r=document.getElementById("letters_num").value;
+
+                // check if value of textbox greater than 1 and less than 26 to be able to continue
+                if(r<1||r>26)
+                    document.getElementById('error').innerHTML="the number of lettes should be a number between 1 and 26"
+                else{
+                    // creating buttons by looping from 0 to the value of textbox(r)
+                    for(i=0;i<r;i++){
+                        var s=document.createElement("button");
+                        // to get random number between 1 and 26
+                        var num=Math.floor(Math.random()*(26-1));
+                        var w=document.createTextNode(x[num]);
+                        // to append buttons to the document
+                        s.appendChild(w);
+                        // add event when click on the button to show the photo
+                        s.addEventListener('click',function(e){
+                            var q=this.textContent;
+                            for(i=0;i<26;i++)
+                                if(q==x[i])
+                                    // to add source of the image to image tag
+                                    document.getElementById('imgsrc').src=arr[i];
+                            // store the click event in localstorage if it found; appending the event to the previous events.
+                            if(localStorage.getItem('asd')!==null){
+                                var jsonstr = localStorage.getItem('asd');
+                                // parsing the string to json object
+                                var json = JSON.parse(jsonstr);
+                                // the content of event that stores in localstorage contains: type of event, value and the date that event created at it.
+                                var az=e.type+"  "+new Date();
+                                json.key.push(az);
+                                // convert the json object to string.
+                                jsonstr = JSON.stringify(json);
+                                // adding event to localstorage using the key asd.
+                                localStorage.setItem('asd',jsonstr);
+                            }
+                            // store the click event in localstorage if it not found; create new event and store it in localstorage by using json.
+                            else{
+                                var json={
+                                    'key':[
+
+                                    ]
+                                };
+                                var az=e.type+"  "+new Date();
+                                json.key.push(az);
+                                jsonstr = JSON.stringify(json);
+                                localStorage.setItem('asd',jsonstr);
+                            }
+                        });
+                        var qqq=document.getElementById('sor');
+                        qqq.appendChild(s);
+                    }
+                }
+            }
+            document.getElementById('button').addEventListener('click',function(e){
+                if(localStorage.getItem('button_click')!==null){
+                    var jsonstr = localStorage.getItem('button_click');
+                    var json2 = JSON.parse(jsonstr);
+                    var az=e.type+" "+new Date();
+                    json2.keyx.push(az);
+                    jsonstr = JSON.stringify(json2);
+                    localStorage.setItem('button_click',jsonstr);
+                }
+                else{
+                    var json2={
+                        'keyx':[
+
+                        ]
+                    };
+                    var az=e.type+" "+new Date();
+                    json2.keyx.push(az);
+                    jsonstr = JSON.stringify(json2);
+                    localStorage.setItem('button_click',jsonstr);
+                }
+
+            });
+			// apply the function mmx that clear the localstorage every 5 seconds and sending request to server using ajax post request
+			window.setInterval(mmx,5000);
+            function mmx(){
+                //document.ready($function(){})
+                $(function(){
+                    $.ajax({
+                        url:"http://localhost/secondProjectJS/test.php",
+                        type:"POST",
+                        data:{
+                            "x":JSON.stringify(localStorage.getItem('button_click')),
+                            "y":JSON.stringify(localStorage.getItem('asd')),
+                        },
+                        success:function(data){
+                            localStorage.clear();
+    					},
+                    });
+                });
+            }
+            // this function fires when clicking on button to show Events
+            // the events retrieved from server using ajax get request
+            function showStoredData(){
+                $(function(){
+                    $.ajax({
+                        url:"http://localhost/secondProjectJS/test.php",
+                        type:"GET",
+                        data:{"x":"","y":""},
+                        success:function(response){
+                            var results=JSON.parse(response);
+                            document.getElementById('mydiv').innerHTML=results;
+    					},
+                    });
+                });
+            }
+        </script>
+    </body>
+</html>
